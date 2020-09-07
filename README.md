@@ -1,16 +1,27 @@
-# medium_app
+# Medium_clone_ui
 
-A new Flutter application.
+Medium_clone_ui: Is a full stack mobile application consuming Expressjs  API. in Repo Medium_clone_api
 
-## Getting Started
+## Installation
 
-This project is a starting point for a Flutter application.
+Clone the repo
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+pip install foobar
+```
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Usage
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```python
+@BaseERL = https://medium-clone-v1-expressjs-api.herokuapp.com/
+
+refer to the repo metioned above for all the endponts
+```
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+[MIT]
