@@ -8,33 +8,91 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+  //Animation2
+  AnimationController _controller1;
+  Animation<Offset> animation1;
+
+  //Animation2
+  AnimationController _controller2;
+  Animation<Offset> animation2;
+
   Widget _boxContainerButtons(String path, String text) {
-    return Container(
-      height: 60.0,
-      width: MediaQuery.of(context).size.width,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Row(
-            children: [
-              Image.asset(
-                path,
-                height: 40.0,
-                width: 40.0,
-              ),
-              SizedBox(
-                width: 20.0,
-              ),
-              Text(
-                text,
-                style: kSocialSignInStyle,
-              ),
-            ],
+    return SlideTransition(
+      position: animation2,
+      child: Container(
+        height: 60.0,
+        width: MediaQuery.of(context).size.width,
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              children: [
+                Image.asset(
+                  path,
+                  height: 40.0,
+                  width: 40.0,
+                ),
+                SizedBox(
+                  width: 20.0,
+                ),
+                Text(
+                  text,
+                  style: kSocialSignInStyle,
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller1 = AnimationController(
+      duration: Duration(
+        milliseconds: 1500,
+      ),
+      vsync: this,
+    );
+    animation1 = Tween<Offset>(
+      begin: Offset(0.0, 8.0),
+      end: Offset(0.0, 0.1),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller1,
+        curve: Curves.easeInOutBack,
+      ),
+    );
+
+    //Controller2
+    _controller2 = AnimationController(
+      duration: Duration(
+        milliseconds: 3000,
+      ),
+      vsync: this,
+    );
+    animation2 = Tween<Offset>(
+      begin: Offset(0.0, 8.0),
+      end: Offset(0.0, 0.1),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller2,
+        curve: Curves.easeInBack,
+      ),
+    );
+    //
+    _controller1.forward();
+    _controller2.forward();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller1.dispose();
+    _controller2.dispose();
   }
 
   @override
@@ -44,11 +102,14 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        title: const Text(
-          'Medium Clone',
-          style: TextStyle(
-            color: Colors.greenAccent,
-            fontSize: 25.0,
+        title: SlideTransition(
+          position: animation1,
+          child: const Text(
+            'Medium Clone',
+            style: TextStyle(
+              color: Colors.greenAccent,
+              fontSize: 25.0,
+            ),
           ),
         ),
       ),
@@ -77,8 +138,11 @@ class _MyHomePageState extends State<MyHomePage> {
               // SizedBox(
               //   height: mediaQuery.size.height / 6,
               // ),
-              TextWidgets(
-                text: 'Create stories for great people.',
+              SlideTransition(
+                position: animation1,
+                child: TextWidgets(
+                  text: 'Create stories for great people.',
+                ),
               ),
               SizedBox(
                 height: 20,
@@ -101,21 +165,24 @@ class _MyHomePageState extends State<MyHomePage> {
               SizedBox(
                 height: 20,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SignInWidget(
-                    text: 'Already have an account?',
-                    style: kAlreadyHaveAnAccountStyle,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  SignInWidget(
-                    text: "SignIn",
-                    style: kSignInStyle,
-                  ),
-                ],
+              SlideTransition(
+                position: animation2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SignInWidget(
+                      text: 'Already have an account?',
+                      style: kAlreadyHaveAnAccountStyle,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    SignInWidget(
+                      text: "SignIn",
+                      style: kSignInStyle,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
