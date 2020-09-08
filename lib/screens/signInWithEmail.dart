@@ -14,7 +14,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
   bool _iconVisibility = true;
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-  TextEditingController _emailControler = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
 
   String _errorText;
   bool _validate = false;
@@ -23,12 +23,12 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
 //Instance of network class for making api call
   NetworkHelper networkHelper = NetworkHelper();
 
-  //Registration
+  //Registration Logic
   Future<void> _submit() async {
     setState(() {
       _isLoading = true;
     });
-
+//Checking
     await _checkIfUserExist();
     if (!_globalKey.currentState.validate() && !_validate) {
       return;
@@ -36,7 +36,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
 // Getting data
     Map<String, String> _authData = {
       'username': _usernameController.text,
-      'email': _emailControler.text,
+      'email': _emailController.text,
       'password': _passwordController.text,
     };
     //Now, making the API call
@@ -55,7 +55,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
 
 // Checking if User already exist by email
   Future<void> _checkIfUserExist() async {
-    if (_emailControler.text.length == 0) {
+    if (_emailController.text.length == 0) {
       setState(() {
         _isLoading = false;
         _validate = false;
@@ -64,10 +64,10 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
     } else {
       try {
         var response = await networkHelper
-            .getData('api/users/checkEmail/${_emailControler.text}');
-        if (response['status']) {
+            .getData('api/users/email/${_emailController.text}');
+        if (response['status'] == true) {
           setState(() {
-            //_isLoading = false;
+            _isLoading = false; //check later
             _validate = false;
             _errorText = 'Email address already taken';
           });
@@ -76,8 +76,8 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
             _validate = true;
           });
         }
-      } catch (e) {
-        throw e;
+      } catch (err) {
+        throw err;
       }
     }
   }
@@ -118,17 +118,8 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
         children: [
           Text(label),
           TextFormField(
-            controller: _emailControler,
+            controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            // validator: (value) {
-            //   if (value.isEmpty) {
-            //     return 'Email cannot be empty';
-            //   }
-            //   if (!value.contains('@')) {
-            //     return 'Email IS invalid ';
-            //   }
-            //   return null;
-            // },
             decoration: InputDecoration(
               errorText: _validate ? null : _errorText,
               focusedBorder: UnderlineInputBorder(
