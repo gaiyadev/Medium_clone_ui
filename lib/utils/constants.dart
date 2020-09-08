@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 const kTitleTextStyle = TextStyle(
   fontSize: 35.0,
@@ -22,6 +21,12 @@ const kSignInStyle = TextStyle(
   color: Colors.green,
   fontSize: 17.0,
   fontWeight: FontWeight.bold,
+);
+const kSignInTitleStyle = TextStyle(
+  color: Colors.black,
+  fontSize: 24.0,
+  fontWeight: FontWeight.bold,
+  letterSpacing: 2,
 );
 
 const kSocialSignInStyle = TextStyle(

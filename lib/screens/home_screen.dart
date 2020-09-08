@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medium_app/screens/signInWithEmail.dart';
 import 'package:medium_app/utils/constants.dart';
 import 'package:medium_app/widgets/signInWidget.dart';
 import 'package:medium_app/widgets/textWidget.dart';
@@ -17,33 +18,44 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   AnimationController _controller2;
   Animation<Offset> animation2;
 
-  Widget _boxContainerButtons(String path, String text) {
+  Widget _boxContainerButtons({String path, String text, Function onTap}) {
     return SlideTransition(
       position: animation2,
-      child: Container(
-        height: 60.0,
-        width: MediaQuery.of(context).size.width,
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              children: [
-                Image.asset(
-                  path,
-                  height: 40.0,
-                  width: 40.0,
-                ),
-                SizedBox(
-                  width: 20.0,
-                ),
-                Text(
-                  text,
-                  style: kSocialSignInStyle,
-                ),
-              ],
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          height: 60.0,
+          width: MediaQuery.of(context).size.width,
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                children: [
+                  Image.asset(
+                    path,
+                    height: 40.0,
+                    width: 40.0,
+                  ),
+                  SizedBox(
+                    width: 20.0,
+                  ),
+                  Text(
+                    text,
+                    style: kSocialSignInStyle,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void onTap() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => SignInWithEmail(),
       ),
     );
   }
@@ -147,20 +159,25 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               SizedBox(
                 height: 20,
               ),
-              _boxContainerButtons('images/google.png', 'Sign in with Google'),
+              _boxContainerButtons(
+                  path: 'images/google.png',
+                  text: 'Sign in with Google',
+                  onTap: null),
               SizedBox(
                 height: 20,
               ),
               _boxContainerButtons(
-                'images/fbdownload.png',
-                'Sign in with Facebook',
+                path: 'images/fbdownload.png',
+                text: 'Sign in with Facebook',
+                onTap: null,
               ),
               SizedBox(
                 height: 20,
               ),
               _boxContainerButtons(
-                'images/email.png',
-                'Sign in with Email',
+                path: 'images/email.png',
+                text: 'Sign in with Email',
+                onTap: onTap,
               ),
               SizedBox(
                 height: 20,
