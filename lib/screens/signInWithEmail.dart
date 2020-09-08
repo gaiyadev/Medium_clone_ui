@@ -48,7 +48,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
     //Now, making the API call
     try {
       await networkHelper
-          .userRegistration('api/users/register', _authData)
+          .userAuth('api/users/register', _authData)
           .then((_) => {
                 setState(() {
                   _isLoading = false;

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:medium_app/screens/forgot_password_screen.dart';
 import 'package:medium_app/screens/home_screen.dart';
@@ -14,7 +16,6 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final GlobalKey<FormState> _globalKey = GlobalKey();
   bool _iconVisibility = true;
-  // TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
 
@@ -30,13 +31,6 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() {
       _isLoading = true;
     });
-//Checking
-    // final checkEmail = await _checkIfUserExist();
-    // final checkUsername = await _checkIfUsernameExist();
-
-    // if (!checkEmail || !checkUsername) {
-    //   return;
-    // }
     if (!_globalKey.currentState.validate()) {
       return;
     }
@@ -47,48 +41,26 @@ class _SignInScreenState extends State<SignInScreen> {
     };
     print(_authData);
     //Now, making the API call
-    // try {
-    //   await networkHelper
-    //       .userRegistration('api/users/login', _authData)
-    //       .then((_) => {
-    //             setState(() {
-    //               _isLoading = false;
-    //             })
-    //           })
-    //       .catchError((err) {
-    //     print(err);
-    //   });
-    // } catch (err) {
-    //   setState(() {
-    //     _isLoading = false;
-    //   });
-    //   throw err;
-    // }
+    try {
+      var response = await networkHelper.userAuth('api/users/login', _authData);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map<String, dynamic> authToken = jsonDecode(response.body);
+        print(authToken['token']);
+      } else {
+        Map<String, dynamic> data = jsonDecode(response.body);
+        setState(() {
+          _isLoading = false;
+        });
+        print(response.statusCode);
+        print(data);
+      }
+    } catch (err) {
+      setState(() {
+        _isLoading = false;
+      });
+      throw err;
+    }
   }
-
-//...
-  // Widget _usernmameTextFields(String label) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
-  //     child: Column(
-  //       children: [
-  //         Text(label),
-  //         TextFormField(
-  //           controller: _usernameController,
-  //           keyboardType: TextInputType.text,
-  //           decoration: InputDecoration(
-  //             errorText: _validate ? null : _errorText,
-  //             focusedBorder: UnderlineInputBorder(
-  //                 borderSide: BorderSide(
-  //               color: Colors.black,
-  //               width: 2,
-  //             )),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _emailTextFields(String label) {
     return Padding(
