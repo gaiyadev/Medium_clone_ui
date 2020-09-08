@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medium_app/services/networkHelper.dart';
 import 'package:medium_app/utils/constants.dart';
 
 class SignInWithEmail extends StatefulWidget {
@@ -9,10 +10,79 @@ class SignInWithEmail extends StatefulWidget {
 }
 
 class _SignInWithEmailState extends State<SignInWithEmail> {
-  bool _iconVisibility = true;
-  final _passwordController = TextEditingController();
   final GlobalKey<FormState> _globalKey = GlobalKey();
+  bool _iconVisibility = true;
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  TextEditingController _emailControler = TextEditingController();
 
+  String _errorText;
+  bool _validate = false;
+  bool _isLoading = false;
+
+//Instance of network class for making api call
+  NetworkHelper networkHelper = NetworkHelper();
+
+  //Registration
+  Future<void> _submit() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    await _checkIfUserExist();
+    if (!_globalKey.currentState.validate() && !_validate) {
+      return;
+    }
+// Getting data
+    Map<String, String> _authData = {
+      'username': _usernameController.text,
+      'email': _emailControler.text,
+      'password': _passwordController.text,
+    };
+    //Now, making the API call
+    try {
+      await networkHelper.userRegistration('api/users/register', _authData);
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      //show digload
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+// Checking if User already exist by email
+  Future<void> _checkIfUserExist() async {
+    if (_emailControler.text.length == 0) {
+      setState(() {
+        _isLoading = false;
+        _validate = false;
+        _errorText = 'Email cannot be empty';
+      });
+    } else {
+      try {
+        var response = await networkHelper
+            .getData('api/users/checkEmail/${_emailControler.text}');
+        if (response['status']) {
+          setState(() {
+            //_isLoading = false;
+            _validate = false;
+            _errorText = 'Email address already taken';
+          });
+        } else {
+          setState(() {
+            _validate = true;
+          });
+        }
+      } catch (e) {
+        throw e;
+      }
+    }
+  }
+
+//...
   Widget _usernmameTextFields(String label) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
@@ -20,6 +90,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
         children: [
           Text(label),
           TextFormField(
+            controller: _usernameController,
             keyboardType: TextInputType.text,
             validator: (value) {
               if (value.isEmpty) {
@@ -47,17 +118,19 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
         children: [
           Text(label),
           TextFormField(
+            controller: _emailControler,
             keyboardType: TextInputType.emailAddress,
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Email cannot be empty';
-              }
-              if (!value.contains('@')) {
-                return 'Email IS invalid ';
-              }
-              return null;
-            },
+            // validator: (value) {
+            //   if (value.isEmpty) {
+            //     return 'Email cannot be empty';
+            //   }
+            //   if (!value.contains('@')) {
+            //     return 'Email IS invalid ';
+            //   }
+            //   return null;
+            // },
             decoration: InputDecoration(
+              errorText: _validate ? null : _errorText,
               focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
                 color: Colors.black,
@@ -186,26 +259,23 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
                   height: 20.0,
                 ),
                 InkWell(
-                  onTap: () {
-                    if (_globalKey.currentState.validate()) {
-                      //api call
-                      print('valid');
-                    }
-                  },
-                  child: Container(
-                    width: 150.0,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.greenAccent,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'SignUp',
-                        style: kSignInTitleStyle,
-                      ),
-                    ),
-                  ),
+                  onTap: _submit,
+                  child: _isLoading
+                      ? CircularProgressIndicator()
+                      : Container(
+                          width: 150.0,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.greenAccent,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'SignUp',
+                              style: kSignInTitleStyle,
+                            ),
+                          ),
+                        ),
                 ),
               ],
             ),
