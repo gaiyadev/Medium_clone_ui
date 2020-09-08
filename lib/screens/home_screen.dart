@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medium_app/screens/signInWithEmail.dart';
+import 'package:medium_app/screens/signIn_screen.dart';
 import 'package:medium_app/utils/constants.dart';
 import 'package:medium_app/widgets/signInWidget.dart';
 import 'package:medium_app/widgets/textWidget.dart';
@@ -194,9 +195,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     SizedBox(
                       width: 10,
                     ),
-                    SignInWidget(
-                      text: "SignIn",
-                      style: kSignInStyle,
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => SignInScreen(),
+                          ),
+                        );
+                      },
+                      child: SignInWidget(
+                        text: "SignIn",
+                        style: kSignInStyle,
+                      ),
                     ),
                   ],
                 ),

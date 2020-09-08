@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:medium_app/screens/signIn_screen.dart';
+import 'package:medium_app/screens/forgot_password_screen.dart';
+import 'package:medium_app/screens/home_screen.dart';
 import 'package:medium_app/services/networkHelper.dart';
 import 'package:medium_app/utils/constants.dart';
 
-class SignInWithEmail extends StatefulWidget {
-  static const String routeName = '/signInWithEmail';
+class SignInScreen extends StatefulWidget {
+  static const String routeName = '/signIn';
 
   @override
-  _SignInWithEmailState createState() => _SignInWithEmailState();
+  _SignInScreenState createState() => _SignInScreenState();
 }
 
-class _SignInWithEmailState extends State<SignInWithEmail> {
+class _SignInScreenState extends State<SignInScreen> {
   final GlobalKey<FormState> _globalKey = GlobalKey();
   bool _iconVisibility = true;
-  TextEditingController _usernameController = TextEditingController();
+  // TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
 
-  String _errorText;
-  bool _validate = false;
+  // String _errorText;
+  // bool _validate = false;
   bool _isLoading = false;
 
 //Instance of network class for making api call
@@ -30,122 +31,64 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
       _isLoading = true;
     });
 //Checking
-    final checkEmail = await _checkIfUserExist();
-    final checkUsername = await _checkIfUsernameExist();
+    // final checkEmail = await _checkIfUserExist();
+    // final checkUsername = await _checkIfUsernameExist();
 
-    if (!checkEmail || !checkUsername) {
-      return;
-    }
-    if (!_globalKey.currentState.validate() && !_validate) {
+    // if (!checkEmail || !checkUsername) {
+    //   return;
+    // }
+    if (!_globalKey.currentState.validate()) {
       return;
     }
 // Getting data
     Map<String, String> _authData = {
-      'username': _usernameController.text,
       'email': _emailController.text,
       'password': _passwordController.text,
     };
+    print(_authData);
     //Now, making the API call
-    try {
-      await networkHelper
-          .userRegistration('api/users/register', _authData)
-          .then((_) => {
-                setState(() {
-                  _isLoading = false;
-                })
-              })
-          .catchError((err) {
-        print(err);
-      });
-    } catch (err) {
-      setState(() {
-        _isLoading = false;
-      });
-      throw err;
-    }
-  }
-
-// Checking if User email already exist
-  Future<dynamic> _checkIfUserExist() async {
-    if (_emailController.text.length == 0) {
-      setState(() {
-        _isLoading = false;
-        _validate = false;
-        _errorText = 'Email cannot be empty';
-      });
-    } else {
-      try {
-        var response = await networkHelper
-            .getData('api/users/email/${_emailController.text}');
-        if (response['status'] == true) {
-          setState(() {
-            _isLoading = false; //check later
-            _validate = false;
-            _errorText = 'Email address already taken';
-          });
-        } else {
-          setState(() {
-            _validate = true;
-          });
-        }
-      } catch (err) {
-        throw err;
-      }
-    }
-  }
-
-// Checking if Username already exist
-  Future<dynamic> _checkIfUsernameExist() async {
-    if (_usernameController.text.length == 0) {
-      setState(() {
-        _isLoading = false;
-        _validate = false;
-        _errorText = 'Username cannot be empty';
-      });
-    } else {
-      try {
-        var response = await networkHelper
-            .getData('api/users/username/${_usernameController.text}');
-        if (response['status'] == true) {
-          setState(() {
-            _isLoading = false; //check later
-            _validate = false;
-            _errorText = 'Username already taken';
-          });
-        } else {
-          setState(() {
-            _validate = true;
-          });
-        }
-      } catch (err) {
-        throw err;
-      }
-    }
+    // try {
+    //   await networkHelper
+    //       .userRegistration('api/users/login', _authData)
+    //       .then((_) => {
+    //             setState(() {
+    //               _isLoading = false;
+    //             })
+    //           })
+    //       .catchError((err) {
+    //     print(err);
+    //   });
+    // } catch (err) {
+    //   setState(() {
+    //     _isLoading = false;
+    //   });
+    //   throw err;
+    // }
   }
 
 //...
-  Widget _usernmameTextFields(String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
-      child: Column(
-        children: [
-          Text(label),
-          TextFormField(
-            controller: _usernameController,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              errorText: _validate ? null : _errorText,
-              focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                color: Colors.black,
-                width: 2,
-              )),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _usernmameTextFields(String label) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
+  //     child: Column(
+  //       children: [
+  //         Text(label),
+  //         TextFormField(
+  //           controller: _usernameController,
+  //           keyboardType: TextInputType.text,
+  //           decoration: InputDecoration(
+  //             errorText: _validate ? null : _errorText,
+  //             focusedBorder: UnderlineInputBorder(
+  //                 borderSide: BorderSide(
+  //               color: Colors.black,
+  //               width: 2,
+  //             )),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _emailTextFields(String label) {
     return Padding(
@@ -154,10 +97,16 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
         children: [
           Text(label),
           TextFormField(
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Email cannot be blank';
+              }
+              return null;
+            },
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              errorText: _validate ? null : _errorText,
+              // errorText: _validate ? null : _errorText,
               focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
                 color: Colors.black,
@@ -182,9 +131,6 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
               if (value.isEmpty) {
                 return 'Password cannot be empty';
               }
-              if (value.length < 6) {
-                return 'Password length must be morethan 6 char ';
-              }
               return null;
             },
             obscureText: _iconVisibility,
@@ -198,38 +144,6 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
                       _iconVisibility = !_iconVisibility;
                     });
                   }),
-              helperText: 'Please password length must be morethan6',
-              helperStyle: TextStyle(
-                fontSize: 17,
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.black,
-                  width: 2,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _confirmPasswordTextFields(String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0),
-      child: Column(
-        children: [
-          Text(label),
-          TextFormField(
-            validator: (value) {
-              if (value != _passwordController.text) {
-                return 'Passwords do not match!';
-              }
-              return null;
-            },
-            obscureText: true,
-            decoration: InputDecoration(
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
                   color: Colors.black,
@@ -271,35 +185,43 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
                 Container(
                   margin: EdgeInsets.only(top: 78),
                   child: Text(
-                    'Sign up with email',
+                    'Sign In with Email',
                     style: kSignInTitleStyle,
                   ),
                 ),
                 SizedBox(
                   height: 20.0,
                 ),
-                _usernmameTextFields('Username'),
+                // _usernmameTextFields('Username'),
                 _emailTextFields('Email'),
                 _passwordTextFields('Password'),
-                _confirmPasswordTextFields('Confirm Password'),
                 SizedBox(
                   height: 20.0,
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(28, 8.0, 28, 18),
+                  padding: const EdgeInsets.fromLTRB(29.0, 8.0, 29.0, 28.0),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       InkWell(
                         onTap: () {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                              builder: (context) => SignInScreen(),
+                              builder: (context) => ForgotPasswordScreen(),
                             ),
                           );
                         },
-                        child: Text(
-                          'Already have an account?',
-                        ),
+                        child: Text('Forgot password'),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => MyHomePage(),
+                            ),
+                          );
+                        },
+                        child: Text("Don't have an account?"),
                       ),
                     ],
                   ),
@@ -317,7 +239,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
                           ),
                           child: Center(
                             child: Text(
-                              'SignUp',
+                              'SignIn',
                               style: kSignInTitleStyle,
                             ),
                           ),
