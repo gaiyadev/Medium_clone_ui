@@ -25,6 +25,7 @@ class _SignInScreenState extends State<SignInScreen> {
   // String _errorText;
   // bool _validate = false;
   bool _isLoading = false;
+  final storage = new FlutterSecureStorage();
 
 //Instance of network class for making api call
   NetworkHelper networkHelper = NetworkHelper();
@@ -200,13 +201,18 @@ class _SignInScreenState extends State<SignInScreen> {
                         });
                         var authToken = jsonDecode(response.body);
                         _showSnackBar(context);
-                        //set token
+                        //saving token to phone
+                        print(authToken['token']);
+                        await storage.write(
+                          key: 'token',
+                          value: authToken['token'],
+                        );
+                        // Go to home page
                         Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
                               builder: (context) => HomePageScreen(),
                             ),
                             (route) => false);
-                        print(authToken['token']);
                       } else {
                         setState(() {
                           _isLoading = false;
