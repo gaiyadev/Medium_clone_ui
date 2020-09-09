@@ -19,6 +19,7 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _iconVisibility = true;
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   // String _errorText;
   // bool _validate = false;
@@ -126,10 +127,16 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
+  _showSnackBar(BuildContext context) {
+    final snackBar = SnackBar(content: Text('Authentication succesfully'));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     return Scaffold(
+      key: _scaffoldKey,
       body: Container(
         height: mediaQuery.size.height,
         width: mediaQuery.size.width,
@@ -204,18 +211,66 @@ class _SignInScreenState extends State<SignInScreen> {
                       'email': _emailController.text,
                       'password': _passwordController.text,
                     };
-                    Response response = await networkHelper.userAuth(
-                        '/api/users/login', _authData);
 
-                    if (response.statusCode == 200) {
-                      var authToken =
-                          jsonDecode(response.body);
-                      print(authToken['token']);
-                    } else {
+                    if (!_globalKey.currentState.validate()) {
                       setState(() {
                         _isLoading = false;
                       });
-                      print('error');
+                      return;
+                    }
+                    //..
+                    try {
+                      Response response = await networkHelper.postData(
+                        '/api/users/login',
+                        _authData,
+                      );
+
+                      if (response.statusCode == 200) {
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        var authToken = jsonDecode(response.body);
+
+                        ///...
+                        _showSnackBar(context);
+                        print(authToken['token']);
+                      } else {
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: Text('An Error Occurred!'),
+                            content: Text('Something went wrong'),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text('Okay'),
+                                onPressed: () {
+                                  Navigator.of(ctx).pop();
+                                },
+                              )
+                            ],
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: Text('An Error Occurred!'),
+                          content: Text('Invalid username or password'),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text('Okay'),
+                              onPressed: () {
+                                Navigator.of(ctx).pop();
+                              },
+                            )
+                          ],
+                        ),
+                      );
+                      throw e;
                     }
                   },
                   child: _isLoading

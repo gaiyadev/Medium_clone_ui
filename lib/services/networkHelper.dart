@@ -25,7 +25,7 @@ class NetworkHelper {
   }
 
   //User registration
-  Future<dynamic> userAuth(String url, Map<String, String> body) async {
+  Future<http.Response> postData(String url, Map<String, String> body) async {
     url = UrlFormater.urlFormater(url);
     try {
       http.Response response = await http.post(
@@ -35,14 +35,7 @@ class NetworkHelper {
         },
         body: jsonEncode(body),
       );
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        String data = response.body;
-        var decodeData = jsonDecode(data);
-        return decodeData;
-      } else {
-        logger.d(response.statusCode);
-        logger.d(response.body);
-      }
+      return response;
     } catch (err) {
       throw err;
     }
