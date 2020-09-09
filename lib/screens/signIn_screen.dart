@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:medium_app/screens/forgot_password_screen.dart';
 import 'package:medium_app/screens/home_screen.dart';
 import 'package:medium_app/services/networkHelper.dart';
@@ -27,40 +28,36 @@ class _SignInScreenState extends State<SignInScreen> {
   NetworkHelper networkHelper = NetworkHelper();
 
   //Registration Logic
-  Future<void> _submit() async {
-    setState(() {
-      _isLoading = true;
-    });
-    if (!_globalKey.currentState.validate()) {
-      return;
-    }
-// Getting data
-    Map<String, String> _authData = {
-      'email': _emailController.text,
-      'password': _passwordController.text,
-    };
-    print(_authData);
-    //Now, making the API call
-    try {
-      var response = await networkHelper.userAuth('api/users/login', _authData);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        Map<String, dynamic> authToken = jsonDecode(response.body);
-        print(authToken['token']);
-      } else {
-        Map<String, dynamic> data = jsonDecode(response.body);
-        setState(() {
-          _isLoading = false;
-        });
-        print(response.statusCode);
-        print(data);
-      }
-    } catch (err) {
-      setState(() {
-        _isLoading = false;
-      });
-      throw err;
-    }
-  }
+//   Future<void> _submit() async {
+//     setState(() {
+//       _isLoading = true;
+//     });
+//     if (!_globalKey.currentState.validate()) {
+//       return;
+//     }
+// // Getting data
+//     Map<String, String> _authData = {
+//       'email': _emailController.text,
+//       'password': _passwordController.text,
+//     };
+//     //Now, making the API call
+
+//     await networkHelper
+//         .userAuth('/api/users/login', _authData)
+//         .then((response) => () {
+//               setState(() {
+//                 _isLoading = false;
+//               });
+//               print(response['token']);
+//             })
+//         .catchError((err) {
+//       setState(() {
+//         _isLoading = false;
+//       });
+//       throw err;
+//     });
+
+//   }
 
   Widget _emailTextFields(String label) {
     return Padding(
@@ -199,7 +196,28 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                 ),
                 InkWell(
-                  onTap: _submit,
+                  onTap: () async {
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    Map<String, String> _authData = {
+                      'email': _emailController.text,
+                      'password': _passwordController.text,
+                    };
+                    Response response = await networkHelper.userAuth(
+                        '/api/users/login', _authData);
+
+                    if (response.statusCode == 200) {
+                      var authToken =
+                          jsonDecode(response.body);
+                      print(authToken['token']);
+                    } else {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      print('error');
+                    }
+                  },
                   child: _isLoading
                       ? CircularProgressIndicator()
                       : Container(

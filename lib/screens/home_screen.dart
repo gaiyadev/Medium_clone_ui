@@ -53,13 +53,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
-  void onTap() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => SignInWithEmail(),
-      ),
-    );
-  }
+  void onTap() {}
 
   @override
   void initState() {
@@ -178,7 +172,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               _boxContainerButtons(
                 path: 'images/email.png',
                 text: 'Sign in with Email',
-                onTap: onTap,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => SignInWithEmail(),
+                    ),
+                  );
+                },
               ),
               SizedBox(
                 height: 20,

@@ -18,7 +18,6 @@ class NetworkHelper {
         return decodeData;
       } else {
         logger.d(response.statusCode);
-        print(response.body);
       }
     } catch (err) {
       throw err;
@@ -31,14 +30,14 @@ class NetworkHelper {
     try {
       http.Response response = await http.post(
         url,
-        headers: {
-          'Content-type': 'application/json',
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(body),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         String data = response.body;
-        var decodeData = data;
+        var decodeData = jsonDecode(data);
         return decodeData;
       } else {
         logger.d(response.statusCode);

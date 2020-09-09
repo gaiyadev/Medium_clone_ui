@@ -31,12 +31,14 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
     });
 //Checking
     final checkEmail = await _checkIfUserExist();
-    final checkUsername = await _checkIfUsernameExist();
-
-    if (!checkEmail || !checkUsername) {
+    if (checkEmail == false) {
       return;
     }
-    if (!_globalKey.currentState.validate() && !_validate) {
+
+    if (!_globalKey.currentState.validate() || !_validate) {
+      setState(() {
+        _isLoading = false;
+      });
       return;
     }
 // Getting data
@@ -48,7 +50,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
     //Now, making the API call
     try {
       await networkHelper
-          .userAuth('api/users/register', _authData)
+          .userAuth('/api/users/register', _authData)
           .then((_) => {
                 setState(() {
                   _isLoading = false;
@@ -58,9 +60,6 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
         print(err);
       });
     } catch (err) {
-      setState(() {
-        _isLoading = false;
-      });
       throw err;
     }
   }
@@ -76,44 +75,16 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
     } else {
       try {
         var response = await networkHelper
-            .getData('api/users/email/${_emailController.text}');
-        if (response['status'] == true) {
+            .getData('/api/users/checkemail/${_emailController.text}');
+        if (response['status']) {
           setState(() {
-            _isLoading = false; //check later
+            _isLoading = false;
             _validate = false;
-            _errorText = 'Email address already taken';
+            _errorText = 'Email already taken';
           });
         } else {
           setState(() {
-            _validate = true;
-          });
-        }
-      } catch (err) {
-        throw err;
-      }
-    }
-  }
-
-// Checking if Username already exist
-  Future<dynamic> _checkIfUsernameExist() async {
-    if (_usernameController.text.length == 0) {
-      setState(() {
-        _isLoading = false;
-        _validate = false;
-        _errorText = 'Username cannot be empty';
-      });
-    } else {
-      try {
-        var response = await networkHelper
-            .getData('api/users/username/${_usernameController.text}');
-        if (response['status'] == true) {
-          setState(() {
-            _isLoading = false; //check later
-            _validate = false;
-            _errorText = 'Username already taken';
-          });
-        } else {
-          setState(() {
+            _isLoading = false;
             _validate = true;
           });
         }
@@ -131,10 +102,18 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
         children: [
           Text(label),
           TextFormField(
+            validator: (value) {
+              if (value.isEmpty) {
+                return 'Username cannot be empty';
+              }
+              if (value.length < 4) {
+                return 'Username must be morethan 6 char';
+              }
+              return null;
+            },
             controller: _usernameController,
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
-              errorText: _validate ? null : _errorText,
               focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
                 color: Colors.black,
@@ -154,6 +133,15 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
         children: [
           Text(label),
           TextFormField(
+            // validator: (value) {
+            //   if (value.isEmpty) {
+            //     return 'Email cannot be empty';
+            //   }
+            //   if (!value.contains('@')) {
+            //     return 'Email is invalid';
+            //   }
+            //   return null;
+            // },
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
@@ -306,22 +294,22 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
                 ),
                 InkWell(
                   onTap: _submit,
-                  child: _isLoading
-                      ? CircularProgressIndicator()
-                      : Container(
-                          width: 150.0,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Colors.greenAccent,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Text(
+                  child: Container(
+                    width: 150.0,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.greenAccent,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: _isLoading
+                          ? CircularProgressIndicator()
+                          : Text(
                               'SignUp',
                               style: kSignInTitleStyle,
                             ),
-                          ),
-                        ),
+                    ),
+                  ),
                 ),
               ],
             ),
