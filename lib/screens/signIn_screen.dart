@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:medium_app/screens/forgot_password_screen.dart';
+import 'package:medium_app/screens/home_page_screen.dart';
 import 'package:medium_app/screens/home_screen.dart';
 import 'package:medium_app/services/networkHelper.dart';
 import 'package:medium_app/utils/constants.dart';
@@ -27,38 +28,6 @@ class _SignInScreenState extends State<SignInScreen> {
 
 //Instance of network class for making api call
   NetworkHelper networkHelper = NetworkHelper();
-
-  //Registration Logic
-//   Future<void> _submit() async {
-//     setState(() {
-//       _isLoading = true;
-//     });
-//     if (!_globalKey.currentState.validate()) {
-//       return;
-//     }
-// // Getting data
-//     Map<String, String> _authData = {
-//       'email': _emailController.text,
-//       'password': _passwordController.text,
-//     };
-//     //Now, making the API call
-
-//     await networkHelper
-//         .userAuth('/api/users/login', _authData)
-//         .then((response) => () {
-//               setState(() {
-//                 _isLoading = false;
-//               });
-//               print(response['token']);
-//             })
-//         .catchError((err) {
-//       setState(() {
-//         _isLoading = false;
-//       });
-//       throw err;
-//     });
-
-//   }
 
   Widget _emailTextFields(String label) {
     return Padding(
@@ -230,9 +199,13 @@ class _SignInScreenState extends State<SignInScreen> {
                           _isLoading = false;
                         });
                         var authToken = jsonDecode(response.body);
-
-                        ///...
                         _showSnackBar(context);
+                        //set token
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => HomePageScreen(),
+                            ),
+                            (route) => false);
                         print(authToken['token']);
                       } else {
                         setState(() {

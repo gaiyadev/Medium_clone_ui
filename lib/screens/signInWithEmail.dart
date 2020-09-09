@@ -16,6 +16,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String _errorText;
   bool _validate = false;
@@ -24,44 +25,9 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
 //Instance of network class for making api call
   NetworkHelper networkHelper = NetworkHelper();
 
-  //Registration Logic
-  Future<void> _submit() async {
-    setState(() {
-      _isLoading = true;
-    });
-//Checking
-    final checkEmail = await _checkIfUserExist();
-    if (checkEmail == false) {
-      return;
-    }
-
-    if (!_globalKey.currentState.validate() || !_validate) {
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
-// Getting data
-    Map<String, String> _authData = {
-      'username': _usernameController.text,
-      'email': _emailController.text,
-      'password': _passwordController.text,
-    };
-    //Now, making the API call
-    try {
-      await networkHelper
-          .postData('/api/users/register', _authData)
-          .then((_) => {
-                setState(() {
-                  _isLoading = false;
-                })
-              })
-          .catchError((err) {
-        print(err);
-      });
-    } catch (err) {
-      throw err;
-    }
+  _showSnackBar(BuildContext context) {
+    final snackBar = SnackBar(content: Text('Register succesfully'));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
 
 // Checking if User email already exist
@@ -235,6 +201,7 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     return Scaffold(
+      key: _scaffoldKey,
       body: Container(
         height: mediaQuery.size.height,
         width: mediaQuery.size.width,
@@ -293,7 +260,50 @@ class _SignInWithEmailState extends State<SignInWithEmail> {
                   ),
                 ),
                 InkWell(
-                  onTap: _submit,
+                  onTap: () async {
+                    setState(() {
+                      _isLoading = true;
+                    });
+//Checking
+                    final checkEmail = await _checkIfUserExist();
+                    if (checkEmail == false) {
+                      return;
+                    }
+
+                    if (!_globalKey.currentState.validate() || !_validate) {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      return;
+                    }
+// Getting data
+                    Map<String, String> _authData = {
+                      'username': _usernameController.text,
+                      'email': _emailController.text,
+                      'password': _passwordController.text,
+                    };
+                    //Now, making the API call
+                    try {
+                      await networkHelper
+                          .postData('/api/users/register', _authData)
+                          .then((_) {
+                        setState(() {
+                          _isLoading = false;
+                        });
+
+                        _showSnackBar(context);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => SignInScreen(),
+                          ),
+                        );
+                      }).catchError((err) {
+                        print(err);
+                      });
+                    } catch (err) {
+                      throw err;
+                    }
+                  },
                   child: Container(
                     width: 150.0,
                     height: 50,
