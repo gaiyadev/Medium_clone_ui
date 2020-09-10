@@ -130,6 +130,11 @@ class _CreateProfileScrenState extends State<CreateProfileScren> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Colors.teal,
+        title: Text('Add Your Profile'),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: ListView(
