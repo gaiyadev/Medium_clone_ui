@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medium_app/screens/auth_home_screen.dart';
-import 'package:medium_app/screens/profile_screen.dart';
+import 'package:medium_app/screens/profile/profile_screen.dart';
 
 class HomePageScreen extends StatefulWidget {
   @override

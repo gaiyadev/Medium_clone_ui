@@ -22,6 +22,7 @@ class _SignInScreenState extends State<SignInScreen> {
   TextEditingController _emailController = TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+
   // String _errorText;
   // bool _validate = false;
   bool _isLoading = false;
