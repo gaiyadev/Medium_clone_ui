@@ -14,7 +14,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
+        const  Text(
             'Tap to add Profile data',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -40,7 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Center(
-                child: Text(
+                child: const Text(
                   'Add profile',
                   style: TextStyle(
                     color: Colors.white,

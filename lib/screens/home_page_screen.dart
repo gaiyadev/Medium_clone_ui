@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medium_app/screens/auth_home_screen.dart';
 import 'package:medium_app/screens/profile/profile_screen.dart';
+import 'package:medium_app/widgets/app_drawer.dart';
 
 class HomePageScreen extends StatefulWidget {
   @override
@@ -9,7 +10,7 @@ class HomePageScreen extends StatefulWidget {
 
 class _HomePageScreenState extends State<HomePageScreen> {
   int _currentState = 0;
-  List<Widget> _screens= [
+  List<Widget> _screens = [
     AuthHomeScreen(),
     ProfileScreen(),
   ];
@@ -21,38 +22,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            DrawerHeader(
-              child: Column(
-                children: [
-                  Container(
-                    height: 100.0,
-                    width: 100.0,
-                    decoration: BoxDecoration(
-                      color: Colors.teal,
-                      borderRadius: BorderRadius.circular(50.0),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text('Username'),
-                ],
-              ),
-            ),
-            ListTile(
-              title: const Text('All Post'),
-
-            ),
-          ],
-        ),
-      ),
+      drawer: AppDrawer(),
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.teal,
-        title:Text(_appBarTitle[_currentState]),
+        title: Text(_appBarTitle[_currentState]),
         actions: [
           IconButton(
             icon: Icon(Icons.notifications),
@@ -70,7 +44,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        
         color: Colors.teal,
         shape: CircularNotchedRectangle(),
         notchMargin: 12,
@@ -84,7 +57,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 IconButton(
                   icon: Icon(
                     Icons.home,
-                    color: _currentState == 0 ?  Colors.white :  Colors.white54,
+                    color: _currentState == 0 ? Colors.white : Colors.white54,
                   ),
                   iconSize: 40,
                   onPressed: () {
@@ -94,12 +67,13 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.person,
-                    color: _currentState == 1 ?  Colors.white :  Colors.white54,
-                ),
+                  icon: Icon(
+                    Icons.person,
+                    color: _currentState == 1 ? Colors.white : Colors.white54,
+                  ),
                   onPressed: () {
                     setState(() {
-                      _currentState =1;
+                      _currentState = 1;
                     });
                   },
                   iconSize: 40,
@@ -108,7 +82,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
             ),
           ),
         ),
-        
       ),
       body: _screens[_currentState],
     );
