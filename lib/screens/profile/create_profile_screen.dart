@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:medium_app/screens/home_screen.dart';
+import 'package:medium_app/services/networkHelper.dart';
 
 class CreateProfileScren extends StatefulWidget {
   @override
@@ -11,6 +14,12 @@ class CreateProfileScren extends StatefulWidget {
 class _CreateProfileScrenState extends State<CreateProfileScren> {
   PickedFile _image;
   final ImagePicker picker = ImagePicker();
+  final GlobalKey<FormState> _globalKey = GlobalKey();
+  TextEditingController _name = TextEditingController();
+  TextEditingController _profession = TextEditingController();
+  TextEditingController _dob = TextEditingController();
+  TextEditingController _title = TextEditingController();
+  TextEditingController _about = TextEditingController();
 
   Future getImage(ImageSource source) async {
     final pickedFile = await picker.getImage(
@@ -22,8 +31,17 @@ class _CreateProfileScrenState extends State<CreateProfileScren> {
     });
   }
 
+  bool _circular = false;
+  NetworkHelper networkHelper = NetworkHelper();
   Widget _titleTextField() {
     return TextFormField(
+      controller: _title,
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Title cannot be empty';
+        }
+        return null;
+      },
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderSide: BorderSide(
@@ -48,6 +66,13 @@ class _CreateProfileScrenState extends State<CreateProfileScren> {
 
   Widget _nameTextField() {
     return TextFormField(
+      controller: _name,
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Name cannot be empty';
+        }
+        return null;
+      },
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderSide: BorderSide(
@@ -72,6 +97,13 @@ class _CreateProfileScrenState extends State<CreateProfileScren> {
 
   Widget _proffessionTextField() {
     return TextFormField(
+      controller: _profession,
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Profession cannot be empty';
+        }
+        return null;
+      },
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderSide: BorderSide(
@@ -96,6 +128,13 @@ class _CreateProfileScrenState extends State<CreateProfileScren> {
 
   Widget _dobTextField() {
     return TextFormField(
+      controller: _dob,
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Date of birth cannot be empty';
+        }
+        return null;
+      },
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderSide: BorderSide(
@@ -120,6 +159,13 @@ class _CreateProfileScrenState extends State<CreateProfileScren> {
 
   Widget _aboutTextField() {
     return TextFormField(
+      controller: _about,
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'About cannot be empty';
+        }
+        return null;
+      },
       maxLines: 5,
       decoration: InputDecoration(
         border: OutlineInputBorder(
@@ -222,34 +268,99 @@ class _CreateProfileScrenState extends State<CreateProfileScren> {
         backgroundColor: Colors.teal,
         title: Text('Add Your Profile'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: ListView(
-          children: [
-            _imageProfile(),
-            SizedBox(
-              height: 20,
+      body: _circular
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Form(
+                key: _globalKey,
+                child: ListView(
+                  children: [
+                    _imageProfile(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    _titleTextField(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    _nameTextField(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    _proffessionTextField(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    _dobTextField(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    _aboutTextField(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Center(
+                      child: FlatButton(
+                        color: Colors.teal,
+                        onPressed: () async {
+                          setState(() {
+                            _circular = true;
+                          });
+                          if (_globalKey.currentState.validate()) {
+                            Map<String, String> profileData = {
+                              'name': _name.text,
+                              'title': _title.text,
+                              'profession': _profession.text,
+                              'dob': _dob.text,
+                              'about': _about.text,
+                            };
+                            Response response = await networkHelper.postData(
+                                '/api/users/profile/add', profileData);
+                            if (response.statusCode == 200) {
+                              //success
+
+                              if (_image.path != null) {
+                                var responseImage =
+                                    await networkHelper.patchImge(
+                                        '/api/users/profile/add/image',
+                                        _image.path);
+                                if (responseImage.statusCode == 200) {
+                                  //success
+                                } else {
+                                  print(responseImage.statusCode);
+                                }
+                              }
+                            } else {
+                              setState(() {
+                                _circular = false;
+                              });
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (context) => MyHomePage(),
+                                  ),
+                                  (route) => false);
+                              print(response.statusCode);
+                            }
+                          } else {
+                            setState(() {
+                              _circular = false;
+                            });
+                            return;
+                          }
+                        },
+                        child: Text(
+                          'Submit',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            _titleTextField(),
-            SizedBox(
-              height: 20,
-            ),
-            _nameTextField(),
-            SizedBox(
-              height: 20,
-            ),
-            _proffessionTextField(),
-            SizedBox(
-              height: 20,
-            ),
-            _dobTextField(),
-            SizedBox(
-              height: 20,
-            ),
-            _aboutTextField(),
-          ],
-        ),
-      ),
     );
   }
 }
