@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:medium_app/screens/home_screen.dart';
 import 'package:medium_app/services/networkHelper.dart';
 
 class CreateProfileScren extends StatefulWidget {
@@ -319,30 +318,51 @@ class _CreateProfileScrenState extends State<CreateProfileScren> {
                             };
                             Response response = await networkHelper.postData(
                                 '/api/users/profile/add', profileData);
-                            if (response.statusCode == 200) {
+                            if (response.statusCode == 200 ||
+                                response.statusCode == 201) {
                               //success
-
                               if (_image.path != null) {
                                 var responseImage =
-                                    await networkHelper.patchImge(
+                                    await networkHelper.patchImage(
                                         '/api/users/profile/add/image',
                                         _image.path);
-                                if (responseImage.statusCode == 200) {
+                                if (responseImage.statusCode == 200 ||
+                                    response.statusCode == 201) {
                                   //success
+                                  setState(() {
+                                    _circular = false;
+                                  });
                                 } else {
                                   print(responseImage.statusCode);
+                                  print('image err');
                                 }
                               }
                             } else {
                               setState(() {
                                 _circular = false;
                               });
-                              Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                    builder: (context) => MyHomePage(),
-                                  ),
-                                  (route) => false);
+                              showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: Text('An Error Occurred!'),
+                                  content: Text('Something went wrong'),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: Text('Okay'),
+                                      onPressed: () {
+                                        Navigator.of(ctx).pop();
+                                      },
+                                    )
+                                  ],
+                                ),
+                              );
+                              // Navigator.of(context).pushAndRemoveUntil(
+                              //     MaterialPageRoute(
+                              //       builder: (context) => MyHomePage(),
+                              //     ),
+                              //     (route) => false);
                               print(response.statusCode);
+                              print(response.body);
                             }
                           } else {
                             setState(() {

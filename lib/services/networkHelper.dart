@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:medium_app/services/url_formater.dart';
 
-final storage = new FlutterSecureStorage();
+FlutterSecureStorage storage = new FlutterSecureStorage();
 
 class NetworkHelper {
   var logger = Logger();
@@ -17,7 +17,7 @@ class NetworkHelper {
       http.Response response = await http.get(
         url,
         headers: <String, String>{
-          'authorization': 'Bearer $token',
+          'Authorization': 'Bearer $token',
         },
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -42,7 +42,7 @@ class NetworkHelper {
         url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-          "authorization": "Bearer $token",
+          "Authorization": "Bearer $token",
         },
         body: jsonEncode(body),
       );
@@ -52,14 +52,15 @@ class NetworkHelper {
     }
   }
 
-  Future<http.StreamedResponse> patchImge(String url, String filePath) async {
+  Future<http.StreamedResponse> patchImage(String url, String filePath) async {
     url = UrlFormater.urlFormater(url);
     String token = await storage.read(key: 'token');
-    var request = http.MultipartRequest('PATCH ', Uri.parse(url));
-    request.files.add(await http.MultipartFile.fromPath('img', filePath));
+    var request = http.MultipartRequest('PATCH', Uri.parse(url));
+    request.files
+        .add(await http.MultipartFile.fromPath('profile_image', filePath));
     request.headers.addAll({
       'Content-Type': 'multipart/form-data',
-      'Authorization': 'Bearer $token',
+      'Authorization': "Bearer $token",
     });
     var response = request.send();
     return response;
