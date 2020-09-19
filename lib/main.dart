@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:medium_app/screens/home_page_screen.dart';
 import 'package:medium_app/screens/home_screen.dart';
+import 'package:medium_app/screens/profile/main_profile_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -46,7 +47,7 @@ class _MyAppState extends State<MyApp> {
           Theme.of(context).textTheme,
         ),
       ),
-      home: _page,
+      home: MainProfileScreen(),
     );
   }
 }

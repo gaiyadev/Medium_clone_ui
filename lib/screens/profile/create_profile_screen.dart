@@ -20,7 +20,7 @@ class _CreateProfileScrenState extends State<CreateProfileScren> {
   TextEditingController _title = TextEditingController();
   TextEditingController _about = TextEditingController();
 
-  Future getImage(ImageSource source) async {
+  Future<void> getImage(ImageSource source) async {
     final pickedFile = await picker.getImage(
       source: source,
     );
@@ -321,17 +321,33 @@ class _CreateProfileScrenState extends State<CreateProfileScren> {
                             if (response.statusCode == 200 ||
                                 response.statusCode == 201) {
                               //success
-                              if (_image.path != null) {
+                              if (_image != null) {
                                 var responseImage =
                                     await networkHelper.patchImage(
                                         '/api/users/profile/add/image',
                                         _image.path);
                                 if (responseImage.statusCode == 200 ||
                                     response.statusCode == 201) {
-                                  //success
+                                  //successm ,
                                   setState(() {
                                     _circular = false;
                                   });
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      title: Text('Success!'),
+                                      content:
+                                          Text('Profile created successfully'),
+                                      actions: <Widget>[
+                                        FlatButton(
+                                          child: Text('Okay'),
+                                          onPressed: () {
+                                            Navigator.of(ctx).pop();
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                  );
                                 } else {
                                   print(responseImage.statusCode);
                                   print('image err');
