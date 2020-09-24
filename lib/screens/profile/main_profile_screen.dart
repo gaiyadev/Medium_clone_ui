@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:medium_app/models/profileModel.dart';
+import 'package:medium_app/services/networkHelper.dart';
 
 class MainProfileScreen extends StatefulWidget {
   @override
@@ -6,6 +8,24 @@ class MainProfileScreen extends StatefulWidget {
 }
 
 class _MainProfileScreenState extends State<MainProfileScreen> {
+  bool _loading = true;
+  NetworkHelper networkHelper = NetworkHelper();
+  ProfileModel profileModel = ProfileModel();
+  @override
+  void initState() {
+    fetchData();
+    super.initState();
+  }
+
+  void fetchData() async {
+    var response = await networkHelper.getData('/api/users/profile/getData');
+    print(response['data']);
+    setState(() {
+      profileModel = ProfileModel.fromJson(response['data']);
+      _loading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,17 +49,22 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          head(),
-          Divider(
-            thickness: 0.8,
-          ),
-          otherDetails('About', 'i am a flutter dev'),
-          otherDetails('Full Name', 'Gaiya M. Obed'),
-          otherDetails('label', 'value'),
-        ],
-      ),
+      body: _loading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ListView(
+              children: [
+                head(),
+                Divider(
+                  thickness: 0.8,
+                ),
+                otherDetails('About', profileModel.about),
+                otherDetails('Full Name', profileModel.name),
+                otherDetails('Profession', profileModel.profession),
+                otherDetails('DOB', profileModel.dob),
+              ],
+            ),
     );
   }
 
@@ -55,7 +80,7 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
             ),
           ),
           Text(
-            'Username',
+            ' profileModel.username',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 26,
@@ -64,7 +89,7 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
           SizedBox(
             height: 20,
           ),
-          Text('App dev'),
+          Text('profileModel.title'),
         ],
       ),
     );

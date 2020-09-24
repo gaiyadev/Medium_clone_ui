@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
       });
     } else {
       setState(() {
-        _page = MyHomePage();
+        _page = MainProfileScreen();
       });
     }
   }
@@ -47,7 +47,7 @@ class _MyAppState extends State<MyApp> {
           Theme.of(context).textTheme,
         ),
       ),
-      home: MainProfileScreen(),
+      home: _page,
     );
   }
 }
