@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
       });
     } else {
       setState(() {
-        _page = MainProfileScreen();
+        _page = MyHomePage();
       });
     }
   }
