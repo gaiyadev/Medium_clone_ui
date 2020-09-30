@@ -80,7 +80,7 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
             ),
           ),
           Text(
-            ' profileModel.username',
+            profileModel.username.toString(),
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 26,
@@ -89,7 +89,7 @@ class _MainProfileScreenState extends State<MainProfileScreen> {
           SizedBox(
             height: 20,
           ),
-          Text('profileModel.title'),
+          Text(profileModel.title),
         ],
       ),
     );
